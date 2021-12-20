@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.students.mapper.AchievementMapper">
+    <resultMap id="userResultMap" type="com.example.students.domain.Achievement">
+        <id property="achievementId" column="achievement_id"/>
+        <result property="chinese" column="chinese"/>
+        <result property="mathematics" column="mathematics"/>
+        <result property="englishi" column="englishi"/>
+        <result property="averageScore" column="average-score"/>
+        <result property="allScore" column="all_score"/>
+        <result property="acStateName" column="ac_state_name"/>
+        <result property="acState" column="ac_state"/>
+        <result property="acStateTime" column="ac_state_time"
+                jdbcType="DATE" javaType="java.time.LocalDate"
+                typeHandler="org.apache.ibatis.type.LocalDateTypeHandler"/>
+        <result property="acOperator" column="ac_operator"/>
+        <result property="acOperatorTime" column="ac_operator_time"
+                jdbcType="DATE" javaType="java.time.LocalDate"
+                typeHandler="org.apache.ibatis.type.LocalDateTypeHandler"/>
+        <association property="students" column="student_name" javaType="com.example.students.domain.Students" jdbcType="java.lang.String">
+            <id property="studentId" column="student_id"/>
+            <result property="studentName" column="student_name"/>
+        </association>
+        <association property="classh" column="class_id" javaType="com.example.students.domain.Classh" jdbcType="java.lang.Integer">
+            <id property="classId" column="class_id"/>
+            <result property="classNumber" column="class_number"/>
+            <result property="className" column="class_name"/>
+            <result property="subject" column="subject"/>
+        </association>
+    </resultMap>
+    <select id="scoreFindAll" resultMap="com.example.students.management.AchievementManagement">
+        select student_name, class_number, subject, chinese, mathematics, englishi
+        from achievement inner join students s on achievement.student_id = s.student_id
+        inner join class c on s.class_id = c.class_id
+        where student_name=#{studentName} and class_name=#{className} and average_score=#{averageScore}
+    </select>
+</mapper>
+<!--成绩维护管理部分的查询条件=学生姓名，班级名称，平均成绩【范围条件，包含开始结束】，班级和姓名实现选择班级级联姓名，
+查询结果=学生姓名，班级，科目，科目成绩，如果学生缺考，则该科成绩=NULL显示为空 -->
